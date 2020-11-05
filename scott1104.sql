@@ -406,6 +406,13 @@ SELECT TO_DATE ('2020-11-05', 'YYYY/MM/DD') AS TODATE,
 SELECT * from emp
 where hiredate >= to_date(;
 
+--1981년6월1일 이후에 입사한 사원정보 조회
+select*from emp 
+where hiredate >=to_date('81/06/01','yyyy/mm/dd');
+
+select to_date('2019-12-20')-to_date('2019-10-20') from dual;
+--select '2019-12-20'-'2019-10-20' from dual; //오류뜸에대한 처리
+
 -- 널처리 함수 gkatn : NVL, NVL2
 SELECT empno, ename, sal, comm, sal+comm from emp;
 
@@ -416,9 +423,27 @@ SELECT empno, ename, sal, comm, sal+comm, nvl2(comm,'0','X'), nvL2(comm,sal*12+c
 from emp;
 
 --DECODE함수와 CASE문
---job_id가 manager, salesman, analyst 인 각각의 경우마다 다른 비율을 적용하고 싶다면? 
+--job이 manager인경우, salesman,analyst 경우에 각각의 다른 비율을 적용하고 싶다면?
 
-SELECT empno,ename,job,sal,decode(JOB, 
-                                 'manager',sal*1.1,        
-                                 'salesman,sal*1.05, 'analyst', sal*1.03,) 
+SELECT empno,ename,job,sal, DECODE(JOB,'MANAGER',SAL*1.1,
+                                        'SALESMAN',SAL*1.05,
+                                        'ANALYST',SAL,
+                                        SAL*1.03) AS UPSAL 
+FROM EMP;
+
+SELECT empno,ename,job,sal, CASE JOB
+                                WHEN 'MANAGER' THEN SAL*1.1
+                                WHEN 'SALESMAN'THEN SAL*1.05
+                                WHEN 'ANALYST'THEN SAL
+                                ELSE  SAL*1.03 
+                            END AS UPSAL 
+FROM EMP;
+
+SELECT empno,ename,job,sal,case
+                            WHEN COMM IS NULL THEN '해당사항없음'
+                            WHEN COMM=0 THEN '수당없음'
+                            WHEN COMM>0 THEN '수당 : ' || COMM
+                           END AS COMM_TEXT FROM EMP;
+ 
+
 ) AS UPSAL from emp;
