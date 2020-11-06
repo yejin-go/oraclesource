@@ -103,3 +103,79 @@ where department_id IN (60,70,80,90);
 SELECT employee_id, concat (first_name, concat' 'last_name)), department_id, job_id
 from employees
 Where job_id In('ad_pres', 'pu_clerk');
+
+-- ppt 04 실습 04
+SELECT Last_name, salary,
+    case
+        when salary < 2000 then 0 
+        when (salary < 4000) then 0.09
+        when (salary < 6000) then 0.2
+        when (salary < 8000) then 0.3 
+        when (salary < 10000) then 0.4
+        when (salary < 12000) then 0.42
+        when (salary < 14000) then 0.44
+    ELSE 0.45
+    END as tax_rate
+from employees where department_id=80;
+
+--또는
+SELECT Last_name, salary, DECODE(trunc(salary/2000,0),
+            0, 0.00,
+            1, 0.09,
+            2, 0.20,
+            3, 0.30,
+            4, 0.40,
+            5, 0.42,
+            6, 0.44,
+            0.45) AS TAX_RATE
+from employees where department_id = 80;
+
+----다중행 함수 연습----
+
+--회사내의 최대 연봉 및 최소 연봉 차이를 조회
+SELECT Max(salary) - Min(salary) from employees;
+
+--매니저로 근무하는 사원들의 인원수 조회
+SELECT count(DISTINCT manager_id)as 매니저 from employees;
+
+--부서별 직원의 수를 구하여 부서번호의 오름차순으로 출력
+SELECT count(employee_id), department_id 
+from employees 
+group by department_id 
+order by department_id;
+
+--부서별 급여의 평균 연봉을 출력하고, 평균 연봉은 정수만 나오도록 한다.
+--부서번호별 오름차순으로 정렬
+SELECT round(avg(salary),0), department_id
+from employees 
+group by department_id 
+order by department_id;
+
+--동일한 직업을 가진 사원수를 조회
+SELECT count(employee_id), job_id
+from employees
+group by job_id;
+
+--Join 실습
+--자신의 담당 매니저의 고용일보다 빠른 입사자를 찾아서 hire_date, last_name, manager_id를 출력하세요.
+--(employees self join)
+
+
+--도시 이름이 t자로 시작하는 지역에 거주하는 사원들의 사번, Last_nam, 부서번호 조회하세요.
+--(employees dml department _id와 departments의 department_id 연결 후 departemnts 의 location_id와 locations의 location_id 조인)
+
+--위치 ID가 1700인 동일한 사원들의 employee_id, LAST_NAME, department_id, salary 조회하세요.
+--(employees,department 조인)
+
+--department_name, location_id, 각 부서별 사원수, 각 부서별 평균 연봉 조회
+--(employees,department 조인)
+
+--EXECUTIVE 부서에 근무하는 모든 사원들의 department_id, last_name, job_id 조회하세요
+--(employees,department 조인)
+
+--기존의 직업을 여전히 가지고 있는 사원들의 사번 및 job_id 조회하세요
+--(employees,job_history 조인)
+
+--각 사원별 소속 부서에서 자신보다 늦게 고용되었으나 보다 많은 연봉을 받는 사원들이 존재하는 모든 사원들의 last_name을 조회하세요
+--(employees self join)
+

@@ -447,3 +447,54 @@ SELECT empno,ename,job,sal,case
  
 
 ) AS UPSAL from emp;
+
+--ppt 04 실습 01
+SELECT ename, sal, trunc(sal/21.5, 2)as day_pay, round(sal/21.5/8, 1) as time_pay 
+from emp;
+
+--ppt 04 실습 02
+SELECT ename, hiredate, next_day(ADD_MONTHS(hiredate,3),'월요일') as r_job, 
+case 
+when comm is null then 'n/a'  
+when comm=0 then '0'
+when comm>0 then '' || comm
+End as comm_text
+from emp;
+
+--또는
+SELECT ename, hiredate, next_day(ADD_MONTHS(hiredate,3),'월요일') as r_job, 
+nvl(to_char(comm),'n/a') as comm
+from emp;
+
+
+--ppt 04 실습 03
+SELECT ename, mgr, 
+case
+when mgr is null then '0000'
+when mgr >= 7500 and mgr < 7600 then '5555'
+when mgr >= 7600 and mgr < 7700 then '6666'
+when mgr >= 7700 and mgr < 7800 then '7777'
+when mgr >= 7800 and mgr < 7900 then '8888'
+when mgr >= 7900 then '' || mgr
+End as chg_mgr     
+from emp;
+
+--또는
+SELECT substr(to_char(mgr)1,2) from emp;
+SELECT empno, ename, mgr,
+substr(to_char(mgr)1,2),
+Null,'0000',
+'75', '5555',
+'76', '6666',
+'77', '7777',
+'78', '8888',
+'9999') as chg_mgr     
+from emp;
+
+--HAVING  : groub by 절에 조건을 줄 때 사용한다. (where 는 노노!!!!!!)
+--각 부서의 직책별 평균 급여를 구하되 그 평균 급여가 2000 이상인 그룹만 출력
+SELECT deptno, job, avg(sal)
+from emp
+GROUP BY deptno, job
+HAVING avg(sal) >= 2000
+order by deptno, job;
