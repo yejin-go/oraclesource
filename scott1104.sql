@@ -498,3 +498,55 @@ from emp
 GROUP BY deptno, job
 HAVING avg(sal) >= 2000
 order by deptno, job;
+
+--피피티 서브쿼리 실습 1
+SELECT *
+from emp
+where job = (Select job from emp where ename = 'ALLEN');
+
+SELECT e.job, e.empno, e.ename, e.sal
+from emp e, dept d
+where e.deptno = d.deptno and e.job_id in (Select job from emp where ename = 'ALLEN');
+
+
+--피피티 서브쿼리 실습 2
+SELECT e.empno, e.ename, e.deptno, e.hiredate, e.sal, s.grade
+from emp e, salgrade s
+where e.sal > (SELECT distinct avg(sal) from emp)
+order by sal desc, empno;
+
+SELECT e.empno, e.ename, d.deptno, e.hiredate, d.loc, e.sal, s.grade
+FROM emp e, dept d, salgrade s
+where e.deptno = d.deptno and e.sal between s.losal and s.hisal and e.sal > (select avg(sal) from emp) 
+order by e.sal desc, e.empno asc;
+
+--다중 열 서브 쿼리 : 서브 쿼리의 select문에 비교할 칼럼이 여러개 나오는 방식
+SELECT * fROM emp where (deptno, sal) IN (SELECT deptno, MAX(SAL) FROM emp GROUP BY deptno);
+
+--FROM 절에 사용하는 서브쿼리(인라인 뷰)
+SELECT E.empno, E.ename, D.deptno, D.dname, D.loc 
+FROM (SELECT * FROM emp WHERE deptno = 10) E, (SELECT * FROM dept) D
+WHERE E.DEPTNO = D.DEPTNO;
+
+--SELECT 절에 사용하는 서브쿼리 : 스칼라 서브쿼리
+
+--<생략>
+
+--피피티 실습
+-- 1) 10번 부서에 근무하는 사원 중 30번 부서에는 존재하지 않는 직책을 가진 사원들의 사원정보, 부서정보 출력
+SELECT e.empno, e.ename, e.job, d.deptno, d.dname, d.loc
+FROM emp e, dept d
+WHERE e.deptno = d.deptno and e.job not in (SELECT distinct job from emp where deptno = 30)
+      and e.deptno = 10;
+
+--직책이 salesman인 사람들의 최고 급여보다 높은 급여를 받는 사원들의 사원정보
+--급여등급 정보를 출력하는 sql문 작성. 단, 서브쿼리를 활용할 때 다중행 함수를 사용하는 방법과 사용하지 않는 방법을 통해
+--사원번호를 기준으로 오름차순 정렬 출력.
+SELECT empno, ename, sal, (SELECT grade FROM salgrade where sal between losal and hisal) as GRADE
+FROM emp
+WHERE sal > (SELECT MAX(sal) FROM emp WHERE job = 'salesman');
+
+SELECT empno, ename, sal
+FROM emp
+WHERE sal > ALL (SELECT sal FROM emp WHERE job = 'salesman');
+

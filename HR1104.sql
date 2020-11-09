@@ -159,23 +159,67 @@ group by job_id;
 --Join 실습
 --자신의 담당 매니저의 고용일보다 빠른 입사자를 찾아서 hire_date, last_name, manager_id를 출력하세요.
 --(employees self join)
-
+SELECT e1.hire_date, e1.last_name, e1.hire_Date as 내입사일,
+       e1.manager_ID, e2.hire_date as 매니저입사일
+from employees e1, employees e2
+where e1.manager_id = e2.employee_id and e1.hire_date < e2.hire_date;
 
 --도시 이름이 t자로 시작하는 지역에 거주하는 사원들의 사번, Last_nam, 부서번호 조회하세요.
 --(employees dml department _id와 departments의 department_id 연결 후 departemnts 의 location_id와 locations의 location_id 조인)
+SELECT employee_id, last_name, d.department_id
+FROM employees e, departments d, locations l
+WHERE e.department_id = d.department_id and d.location_id = l.location_id and city like 'T%'; 
 
 --위치 ID가 1700인 동일한 사원들의 employee_id, LAST_NAME, department_id, salary 조회하세요.
 --(employees,department 조인)
+SELECT employee_id, last_name, d.department_id, salary
+FROM employees e, departments d
+WHERE e.department_id = d.department_id and d.location_id = 1700;
 
 --department_name, location_id, 각 부서별 사원수, 각 부서별 평균 연봉 조회
 --(employees,department 조인)
+Select d.department_name, d.location_id, count(employee_id), round(avg(salary),2)
+from employees e, departments d
+where e.department_id = d.department_id
+group by d.department_name, d.location_id;
+
 
 --EXECUTIVE 부서에 근무하는 모든 사원들의 department_id, last_name, job_id 조회하세요
 --(employees,department 조인)
+SELECT employee_id, last_name, d.department_id, job_id
+FROM employees e, departments d
+WHERE e.department_id = d.department_id and d.department_name = 'Executive';
 
 --기존의 직업을 여전히 가지고 있는 사원들의 사번 및 job_id 조회하세요
 --(employees,job_history 조인)
+SELECT e.employee_id, e.job_id
+FROM employees e, job_history j
+WHERE e.employee_id = j.employee_id and e.job_id = j.job_id;
 
 --각 사원별 소속 부서에서 자신보다 늦게 고용되었으나 보다 많은 연봉을 받는 사원들이 존재하는 모든 사원들의 last_name을 조회하세요
 --(employees self join)
+SELECT e1.department_id, e1.first_name||' '||e1.last_name as name 
+FROM employees e1, employees e2
+WHERE e1.department_id = e2.department_id and e1.hire_date < e2 hire_date and 
+      e1.salary < e2.salary;
 
+--서브쿼리 연습
+
+--회사 전체 평균 연봉보다 더 많이 받는 사원들의 LAST_NAME, SALARY 조회
+SELECT last_name, salary
+FROM employees
+WHERE salary > (SELECT avg(salary) from employees);
+
+--LAST_NAME에 u가 포함되는 사원들과 동일 부서에 근무하는 사원들의 employee_id, Last_name 조회
+SELECT last_name, employee_id
+From employees
+where department_id in (SELECT distinct department_id FROM employees where last_name like '%u%');
+
+--Not exists 연산자를 사용하여 매니저가 아닌 사원 이름을 조회
+SELECT first_name || ' ' || last_name as NAME
+FROM employees e1
+Where Not exists (SELECT distinct manager_id FROM employees e2 where e1.employee_id = e2.manager_id);
+
+SELECT first_name || ' ' || last_name as NAME
+FROM employees e1
+Where e1.employee_id Not in (SELECT distinct manager_id FROM employees e2 where e1.employee_id = e2.manager_id);

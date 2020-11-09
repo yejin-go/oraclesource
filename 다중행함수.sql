@@ -163,6 +163,7 @@ where d.deptno = d.deptno
 GROUP BY d.deptno, d.dname 
 order by e.deptno;
 
+
 SELECT d.deptno, d.dname, floor(avg(e.sal)) as avg_sal, max(e.sal) as max_sal, min(e.sal) as min_sal, count(dname) as cnt 
 from emp e inner join dept d on e.deptno = d.deptno
 GROUP BY d.deptno, d.dname 
@@ -174,9 +175,9 @@ from emp e right outer join dept d on e.deptno = d.deptno
 order by d.deptno, e.empno;
 
 --½Ç½À 10
-select d1.deptno, d1.dname, e1.empno, e1.ename, e1.mgr, e1.sal, e1.deptno, s.losal, s.hisal, s.grade, e2.empno as mgr_empno, e2.ename as mgr_ename
+select e1.deptno, d1.dname, e1.empno, e1.ename, e1.mgr, e1.sal, e1.deptno, s.losal, s.hisal, s.grade, e2.empno as mgr_empno, e2.ename as mgr_ename
 from emp e1 right outer join dept d1 on e1.deptno = d1.deptno
-left outer join salgrade s on e1.sal between s.losal and s.hisal
+LEFT outer join salgrade s on e1.sal between s.losal and s.hisal
 left outer join emp e2 on e1.mgr = e2.empno
 order by d1.deptno, e1.empno;
 
@@ -185,3 +186,4 @@ from emp e1, dept d1, salgrade s, emp e2
 where e1.deptno(+) 
 = d1.deptno and e1.sal between s.losal(+) and s.hisal(+) and e1.mgr = e2.empno(+)
 order by e1.DEPTNO;
+
